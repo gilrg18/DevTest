@@ -43,9 +43,12 @@ export class Connect4 {
 
     //Checar si hay ganador
     this.getWinnerVertical(this.player, points, row, col);
-    this.getWinnerHorizontal(this.player, points,row, col)
+    this.getWinnerHorizontal(this.player, points, row, col)
+    this.getWinnerAbajoHaciaArriba(this.player, points, row, col)
+    this.getWinnerArribaHaciaAbajo(this.player, points, row, col)
     //console.log("Player: ", this.player," Points: ", points);
-    if (points.vertical === 4 || points.horizontal === 4) {
+    if (points.vertical === 4 || points.horizontal === 4 ||
+        points.diagonalAbajoHaciaArriba === 4 || points.diagonalArribaHaciaAbajo === 4) {
       //console.log('WINNER GRID: ', this.grid);
       this.winner = this.player;
       return `Player ${this.player} wins!`;
@@ -92,9 +95,7 @@ export class Connect4 {
   }
 
   getWinnerVertical(player: number, points: points, row: number, col: number): void {
-    // if (points.vertical === 4) {
-    //   return;
-    // }
+
     if (this.isValidCol(col) && this.isValidRow(row)) {
       if (this.grid[row][col].value === player) {
         points.vertical++;
@@ -104,9 +105,6 @@ export class Connect4 {
   }
 
   getWinnerHorizontal(player: number, points: points, row: number, col: number): void {
-    // if (points.horizontal === 4) {
-    //     return;  
-    // }
 
     if (this.isValidCol(col) && this.isValidRow(row)) {
         if (this.grid[row][col].value === player && !this.grid[row][col].visited) {
@@ -118,5 +116,31 @@ export class Connect4 {
             //console.log('horizontal grid: ',this.grid, ' points: ',points.horizontal)
         }
     }
-}
+  }   
+
+  getWinnerAbajoHaciaArriba(player: number, points: points, row: number, col: number): void {
+
+    if (this.isValidCol(col) && this.isValidRow(row)) {
+        if (this.grid[row][col].value === player && !this.grid[row][col].visited) {
+            points.diagonalAbajoHaciaArriba++;
+            this.grid[row][col]= {value: player, visited:true};
+            this.getWinnerAbajoHaciaArriba(player, points, row + 1 , col - 1); // Diagonal izquierda abajo
+            this.getWinnerAbajoHaciaArriba(player, points, row - 1, col + 1); // Diagonal derecha arriba
+            this.grid[row][col].visited = false;
+        }
+    }
+  }
+
+  getWinnerArribaHaciaAbajo(player: number, points: points, row: number, col: number): void {
+
+    if (this.isValidCol(col) && this.isValidRow(row)) {
+        if (this.grid[row][col].value === player && !this.grid[row][col].visited) {
+            points.diagonalArribaHaciaAbajo++;
+            this.grid[row][col]= {value: player, visited:true};
+            this.getWinnerArribaHaciaAbajo(player, points, row - 1 , col - 1); // Diagonal izquierda Arriba
+            this.getWinnerArribaHaciaAbajo(player, points, row + 1, col + 1); // Diagonal derecha abajo
+            this.grid[row][col].visited = false;
+        }
+    }
+  }
 }
